@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 /*
 class Task
 {
@@ -76,7 +77,19 @@ public:
 
     void print(const std::string& message) override
     {
-
+        std::ofstream fout(path, std::ios_base::out | std::ios_base::trunc);
+        if (!fout.is_open())
+        {
+            //work with compiler std:c++17
+            int index = path.find_last_of('\\');
+            std::string dir = path.substr(0, index);
+            std::filesystem::create_directories(dir);// #include<windows.h> //std::CreateDirectory("C:\\Users\\morons", NULL);
+            std::cout << "Created directory .\\Command\\log\\ \n";
+            fout = std::ofstream(path, std::ios_base::out | std::ios_base::trunc);
+        }
+        //if (!fout.is_open()){ return;}
+        fout << message;
+        fout.close();
     }
 private:
     std::string path = "";
@@ -99,7 +112,7 @@ int main(int argc, char** argv)
     print(logToConsole, "log to console");
 
     //вывод сообщения в файл, по указанному пути.
-    LogToFileCommand logToFile(".\Command\log.txt");
+    LogToFileCommand logToFile(".\\log\\log.txt");//".\\Command\\log.txt");
     print(logToFile, "log to file");
     return 0;
 }
